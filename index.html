@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Question App</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: sans-serif;
+      font-size: 2rem;
+      text-align: center;
+    }
+    #container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #screen {
+      width: 100%;
+      padding: 2rem;
+    }
+    .option::before {
+      content: attr(data-label) ". ";
+      font-weight: bold;
+    }
+    .option {
+      margin: 1rem 0;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+<div id="container">
+  <div id="screen">Press SPACE to start</div>
+</div>
+
+<script>
+  const green = [
+    {
+      question: "Which region has the highest DAU on our new In App navigation feature?",
+      answers: ["LATAM", "Europe", "MENA", "APAC"]
+    },
+    {
+      question: "Which step of the delivery rider prefers to use the In App Navigation Feature?",
+      answers: ["To Vendor", "To Customer"]
+    },
+    {
+      question: "What country collects the most photos?",
+      answers: ["ae (5.7M per week)", "ph (5.1M)", "sa (4M)", "kw (3.6M)"]
+    },
+    {
+      question: "How many customers pay in cash?",
+      answers: ["1 out of 10", "2 out of 10", "3 out of 10", "4 out of 10"]
+    },
+    {
+      question: "How many times more often do riders dispatch their last delivery of the session compared to earlier orders?",
+      answers: ["0.5", "0.8", "1.0", "1.8"]
+    },
+    {
+      question: "How many times more often do riders decline their deliveries in the last 20 mins of their session compared to earlier orders?",
+      answers: ["1.8", "2.0", "2.8", "3.8"]
+    },
+    {
+      question: "Which assigned vehicle type profile has the highest rate of order redispatches?",
+      answers: ["Motorbike", "Car", "Electric motorbike", "Bike"]
+    },
+    {
+      question: "Orders in which vertical have the lowest decline rate?",
+      answers: ["Convenience", "Groceries", "Restaurants", "Pharmacies"]
+    }
+  ];
+
+  const blue = [
+    {
+      question: "What is the biggest reason why riders contact a support agent?",
+      answers: [
+        "Unable to find the customer (0.44%)",
+        "Large Order (0.24%)",
+        "Not willing to do the order (0.48%)",
+        "App issue (0.11%)"
+      ]
+    },
+    {
+      question: "What country uses PIN validation for return orders?",
+      answers: ["Saudi Arabia", "Egypt", "Jordan", "All of the above"]
+    }
+  ];
+
+  const red = [
+    {
+      question: "Which of these items is the most visited on the Rider App side menu?",
+      answers: ["Inbox", "Earnings", "Wallet", "Rewards"]
+    },
+    {
+      question: "What is the minimum number of digits required for a password?",
+      answers: ["7", "8", "9", "10"]
+    },
+    {
+      question: "On average, how many reset password attempts happen before a successful login?",
+      answers: ["2", "3", "4", "5"]
+    }
+  ];
+
+  const white = [
+    {
+      question: "What is the monthly subscription fee (Euro) for a cloned rider app?",
+      answers: ["5", "12", "24", "50"]
+    },
+    {
+      question: "What’s the highest number of fraudulent riders caught in one day?",
+      answers: ["6700", "2716", "5055", "4587"]
+    },
+    {
+      question: "How often do we release a new version of the rider app?",
+      answers: [
+        "Weekly",
+        "Bi-weekly",
+        "Monthly",
+        "Whenever we have a new feature to launch"
+      ]
+    },
+    {
+      question: "How many Ghost Riders used a different rider’s account last year?",
+      answers: ["0.5 M", "1.0 M", "1.5 M", "2.0 M"]
+    }
+  ];
+
+  const sections = [
+    { color: "#4CAF50", textColor: "white", questions: green },
+    { color: "#2196F3", textColor: "white", questions: blue },
+    { color: "#F44336", textColor: "white", questions: red },
+    { color: "#FFFFFF", textColor: "black", questions: white }
+  ];
+
+  const screen = document.getElementById("screen");
+  const container = document.getElementById("container");
+
+  let currentIndex = -1;
+  let selectedQuestions = [];
+
+  function shuffleAndPick() {
+    selectedQuestions = sections.map(section => {
+      const q = section.questions[Math.floor(Math.random() * section.questions.length)];
+      return { ...q, ...section };
+    });
+    currentIndex = -1;
+  }
+
+  function showNext() {
+    currentIndex++;
+    if (currentIndex >= selectedQuestions.length) {
+      container.style.backgroundColor = "black";
+      screen.style.color = "white";
+      screen.innerHTML = "🎉 Game Over – Thanks!<br><br>Press SPACE to restart.";
+      currentIndex = -2; // special flag to indicate finished state
+      return;
+    }
+
+    const q = selectedQuestions[currentIndex];
+    container.style.backgroundColor = q.color;
+    screen.style.color = q.textColor;
+
+    const html = `
+      <div>${q.question}</div>
+      <div>
+        ${q.answers.map((a, i) => {
+          const label = String.fromCharCode(65 + i);
+          return `<div class="option" data-label="${label}">${a}</div>`;
+        }).join("")}
+      </div>
+    `;
+    screen.innerHTML = html;
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Space") {
+      if (currentIndex === -1 || currentIndex === -2) {
+        shuffleAndPick();
+      }
+      showNext();
+    }
+  });
+</script>
+</body>
+</html>
