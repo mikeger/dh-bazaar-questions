@@ -142,31 +142,25 @@
   const container = document.getElementById("container");
 
   let currentIndex = -1;
-  let selectedQuestions = [];
 
-  function shuffleAndPick() {
-    selectedQuestions = sections.map(section => {
-      const q = section.questions[Math.floor(Math.random() * section.questions.length)];
-      return { ...q, ...section };
-    });
+  function showColorSelection() {
     currentIndex = -1;
+    screen.style.color = "white";
+    container.style.backgroundColor = "black";
+    screen.innerHTML = `
+      <div>Select a category:</div><br>
+      <div class="option" data-key="G">[G]reen – Delivery</div>
+      <div class="option" data-key="B">[B]lue – Support</div>
+      <div class="option" data-key="R">[R]ed – Rider Experience</div>
+      <div class="option" data-key="W">[W]hite – App Misuse</div>
+    `;
   }
 
-  function showNext() {
-    currentIndex++;
-    if (currentIndex >= selectedQuestions.length) {
-      container.style.backgroundColor = "black";
-      screen.style.color = "white";
-      screen.innerHTML = "🎉 Game Over – Thanks!<br><br>Press SPACE to restart.";
-      currentIndex = -2; // special flag to indicate finished state
-      return;
-    }
-
-    const q = selectedQuestions[currentIndex];
-    container.style.backgroundColor = q.color;
-    screen.style.color = q.textColor;
-
-    const html = `
+  function showQuestion(section) {
+    const q = section.questions[Math.floor(Math.random() * section.questions.length)];
+    container.style.backgroundColor = section.color;
+    screen.style.color = section.textColor;
+    screen.innerHTML = `
       <div>${q.question}</div>
       <div>
         ${q.answers.map((a, i) => {
@@ -174,18 +168,25 @@
           return `<div class="option" data-label="${label}">${a}</div>`;
         }).join("")}
       </div>
+      <br><br><div style="font-size:1rem;">Press SPACE to return</div>
     `;
-    screen.innerHTML = html;
   }
 
   document.addEventListener("keydown", (e) => {
-    if (e.code === "Space") {
-      if (currentIndex === -1 || currentIndex === -2) {
-        shuffleAndPick();
+    const key = e.key.toUpperCase();
+    if (currentIndex === -1) {
+      if (["G", "B", "R", "W"].includes(key)) {
+        const sectionMap = { G: 0, B: 1, R: 2, W: 3 };
+        showQuestion(sections[sectionMap[key]]);
+        currentIndex = 0;
       }
-      showNext();
+    } else if (e.code === "Space") {
+      showColorSelection();
     }
   });
+
+  screen.innerHTML = "Press SPACE to start";
+  document.addEventListener("DOMContentLoaded", showColorSelection);
 </script>
 </body>
 </html>
